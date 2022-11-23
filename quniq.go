@@ -97,6 +97,24 @@ func printResult(result map[string]int, enableCount bool, mode PrintMode) {
 	}
 }
 
+func prettify(v reflect.Value, indent int, buf *bytes.Buffer) {
+	for v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+
+	switch v.Kind() {
+	case reflect.Struct:
+		strtype := v.Type().String()
+		if strtype == "time.Time" {
+			fmt.Fprintf(buf, "%s", v.Interface())
+			break
+		} else if strings.HasPrefix(strtype, "io.") {
+			buf.WriteString("<buffer>")
+			break
+		}
+	}
+}
+
 func main() {
 	// flags
 	enableCount := flag.Bool("c", false, "print with count")
@@ -158,6 +176,6 @@ func main() {
 	} else if !(*onlyUnique) && *onlyDuplicated {
 		mode = PrintOnlyDuplicated
 	}
-
-	printResult(result, *enableCount, mode)
+	prettify(result, *enableCount, mode)
+	// printResult(result, *enableCount, mode)
 }
