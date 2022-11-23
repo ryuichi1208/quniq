@@ -12,12 +12,10 @@ import (
 )
 
 const (
-	MegaNum             = 1024 * 1024
+	MegaNum             = 1024 * 1024 // Todo: memory limit
 	OutputMapSize       = 1 * 1024 * 1024
 	IntermediateMapSize = 1 * 1024
 )
-
-type PrintMode int
 
 const (
 	PrintOnlyUnique PrintMode = iota
@@ -35,6 +33,12 @@ func NewMovableBuffer(p *sync.Pool, b []string) *MovableBuffer {
 		pool: p,
 		buf:  b,
 	}
+}
+
+func Prettify(i interface{}) string {
+	var buf bytes.Buffer
+	prettify(reflect.ValueOf(i), 0, &buf)
+	return buf.String()
 }
 
 func (mbuf *MovableBuffer) move() {
